@@ -29,9 +29,10 @@ public class ProyectoCorrecto {
      * @param pesos
      * @param numeroJugadores
      * @param numeroIntercambios
-     * @return
+     * @return El peso minimo de los j primeros jugadores
      */
     public static int algormar(int[] pesos, int numeroJugadores, int numeroIntercambios) {
+
         // Hace una matriz de estados, donde el numero de jugadores es el numero de filas
         // y el numero de columnas es el numero de swaps que puede hacer
         List<Estado> dp[] = new ArrayList[numeroJugadores + 1];
@@ -52,13 +53,12 @@ public class ProyectoCorrecto {
                 for (Estado estado : dp[k]) {
                     // Si el número de swaps supera el límite, no se considera.
                     int nuevosSwaps = estado.getSwap() + costo;
-                    if (nuevosSwaps > numeroIntercambios) {
-                        continue;
+                    if (nuevosSwaps <= numeroIntercambios) {                    
+                        int nuevoPeso = (int) (estado.getPeso() + pesos[i]);
+                        Estado nuevoEstado = new Estado(nuevosSwaps, nuevoPeso);
+                        dp[k + 1].add(nuevoEstado);
                     }
-                    int nuevoPeso = (int) (estado.getPeso() + pesos[i]);
-                    Estado nuevoEstado = new Estado(nuevosSwaps, nuevoPeso);
-                    dp[k + 1].add(nuevoEstado);
-                }
+             }
             }
             // Limpiar la lista de estados para cada número de jugadores para dejar solo los estados que nos sirven.
             for (int k = 0; k <= numeroJugadores; k++) {
