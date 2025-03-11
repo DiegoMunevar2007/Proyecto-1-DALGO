@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -5,40 +6,74 @@ import static java.util.Collections.min;
 
 public class ProyectoCorrecto {
 
-
-
-    public static int algormar(int[] pesos, int numeroJugadores, int numeroIntercambios) {
-        Long tiempoInicio = System.currentTimeMillis();
-        int[][] dp = new int[numeroJugadores+1][numeroIntercambios + 1];
-        for (int i = 0; i <= numeroJugadores; i++) {
-            Arrays.fill(dp[i], Integer.MAX_VALUE);
+    /**
+     * Metodo para limpiar la lista de estados
+     * Mira los pesos y los swaps para eliminar aquellos que no son necesarios dado a que ya existen otros mejores
+     * Ya sea con la misma cantidad de swaps y menor peso o con menor cantidad de swaps
+     * @param estados
+     * @return La lista de estados limpiada
+     */
+    public static List<Estado> obtenerEstadosNoServibles(List<Estado> estados) {
+        if (estados.isEmpty()) {
+            return estados;
         }
-        dp[0][0] = 0;
+        List<Estado> limpiados = new ArrayList<>();
+        for (Estado estado: estados) {
+            // Si la lista esta vacia o el peso del estado actual es menor al peso del ultimo estado en la lista
+            if (limpiados.isEmpty() || estado.getPeso() < limpiados.get(limpiados.size() - 1).getPeso()) {
+                limpiados.add(estado);
+            }
+        }
+        return limpiados;
+    }
+
+    /**
+     * Metodo para encontrar el peso minimo entre los estados entre el numero de jugadores dado y el numero de swaps.
+     * @param pesos
+     * @param numeroJugadores
+     * @param numeroIntercambios
+     * @return
+     */
+    public static int algormar(int[] pesos, int numeroJugadores, int numeroIntercambios) {
+        // Hace una matriz de estados, donde el numero de jugadores es el numero de filas
+        // y el numero de columnas es el numero de swaps que puede hacer
+        List<Estado> dp[] = new ArrayList[numeroJugadores + 1];
+
+        for (int i = 0; i <= numeroJugadores; i++) {
+            dp[i] = new ArrayList<>();
+        }
+        // Estado base: 0 jugadores seleccionados, 0 swaps y 0 peso.
+        int minimo = Integer.MAX_VALUE;
+        dp[0].add(new Estado(0, 0));
+
         for (int i = 0; i < pesos.length; i++) { // recorrer los jugadores en orden
             // Recorremos el número de jugadores ya seleccionados en orden inverso:
             for (int k = Math.min(numeroJugadores - 1, i); k >= 0; k--) { // Tomamos el mínimo entre el número de jugadores y el índice actual.
-                int costo = i - k; // El costo de seleccionar al jugador i como el (k+1)-ésimo.
-                if (costo > numeroIntercambios) {
-                    continue;
-                }
-                for (int w = 0; w <= numeroIntercambios - costo; w++) {
-                    if (dp[k][w] != Integer.MAX_VALUE) {
-                        int nuevoSwap = w + costo;
-                        int nuevoCosto = dp[k][w] + pesos[i];
-                        dp[k + 1][nuevoSwap] = Math.min(dp[k + 1][nuevoSwap], nuevoCosto);
+                 // El costo de seleccionar al jugador i como el (k+1)-ésimo.
+                int costo = i - k;
+                // Los estados posibles para el número de jugadores k+1.
+                for (Estado estado : dp[k]) {
+                    // Si el número de swaps supera el límite, no se considera.
+                    int nuevosSwaps = estado.getSwap() + costo;
+                    if (nuevosSwaps > numeroIntercambios) {
+                        continue;
                     }
+                    int nuevoPeso = (int) (estado.getPeso() + pesos[i]);
+                    Estado nuevoEstado = new Estado(nuevosSwaps, nuevoPeso);
+                    dp[k + 1].add(nuevoEstado);
                 }
             }
+            // Limpiar la lista de estados para cada número de jugadores para dejar solo los estados que nos sirven.
+            for (int k = 0; k <= numeroJugadores; k++) {
+                dp[k] = obtenerEstadosNoServibles(dp[k]);
+            }
         }
-        int minimo = Integer.MAX_VALUE;
-        for (int candidato: dp[numeroJugadores]){
-            minimo = Math.min(minimo, candidato);
+        // Encontrar el peso mínimo entre los estados finales.
+        for (Estado estado : dp[numeroJugadores]) {
+            minimo = (int) Math.min(minimo, estado.getPeso());
         }
-        Long tiempoFinal = System.currentTimeMillis();
         return minimo;
     }
-
-
     public static void main(String[] args) throws FileNotFoundException {
         Scanner sc = new Scanner(new File("test_cases_2.txt"));
         Long tiempoInicio = System.currentTimeMillis();
@@ -56,7 +91,6 @@ public class ProyectoCorrecto {
                 pesos[i] = sc.nextInt();
             }
             int resultado = algormar(pesos, j, m);
-            // Imprimir el resultado
             System.out.println((int) resultado);
         }
         sc.close();

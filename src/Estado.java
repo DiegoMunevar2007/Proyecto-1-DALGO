@@ -1,9 +1,9 @@
 public class Estado {
 
     int swap;
-    long peso;
+    int peso;
 
-    public Estado(int swap, long peso) {
+    public Estado(int swap, int peso) {
         this.swap = swap;
         this.peso = peso;
     }
@@ -18,7 +18,7 @@ public class Estado {
     public void setSwap(int swap) {
         this.swap = swap;
     }
-    public void setPeso(long peso) {
+    public void setPeso(int peso) {
         this.peso = peso;
     }
 
