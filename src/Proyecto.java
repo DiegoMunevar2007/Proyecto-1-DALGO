@@ -6,46 +6,37 @@ public class Proyecto {
 
 
 
-    // Java
     public static int algormar(int[] pesos, int numeroJugadores, int numeroIntercambios) {
-        // dp[k][s] holds the best state (swaps and weight) for selecting k players with s swaps.
-        Estado[][] dp = new Estado[numeroJugadores + 1][numeroIntercambios + 1];
 
-        // Initialize states to infinity.
-        for (int k = 0; k <= numeroJugadores; k++) {
-            for (int s = 0; s <= numeroIntercambios; s++) {
-                dp[k][s] = new Estado(Integer.MAX_VALUE, Long.MAX_VALUE);
-            }
+        Estado[] dp = new Estado[numeroJugadores + 1]; // Estado es una combinación de peso y swap que era lo que usaba DP[][] en la versión anterior
+        for (int k = 0; k <= numeroJugadores; k++) { //Almacena el mejor estado (mínimo peso y swap acumulado) al haber seleccionado k jugadores
+            dp[k] = new Estado(Integer.MAX_VALUE, Long.MAX_VALUE); //Inicializamos todos los estados como infinito
         }
-        dp[0][0] = new Estado(0, 0); // Base state: 0 players, 0 swaps, 0 weight.
+        dp[0] = new Estado(0, 0); // Estado base: 0 jugadores, 0 peso, 0 swaps.
 
-        // Iterate over players.
-        for (int i = 0; i < pesos.length; i++) {
-            // Traverse number of players selected in reverse order.
-            for (int k = numeroJugadores - 1; k >= 0; k--) {
-                // Iterate over possible swap counts.
-                for (int s = 0; s <= numeroIntercambios; s++) {
-                    if (dp[k][s].getPeso() != Long.MAX_VALUE) {  // Valid state.
-                        int nuevoSwap = s + (i - k); // Additional swaps needed.
-                        if (nuevoSwap <= numeroIntercambios) {
-                            long nuevoPeso = dp[k][s].getPeso() + pesos[i];
-                            // If new state has a lower weight, update dp.
-                            if (nuevoPeso < dp[k + 1][nuevoSwap].getPeso()) {
-                                dp[k + 1][nuevoSwap] = new Estado(nuevoSwap, nuevoPeso);
-                            }
+        for (int i = 0; i < pesos.length; i++) { // Recorremos cada jugador en orden
+
+            for (int k = numeroJugadores - 1; k >= 0; k--) { // Recorremos en orden inverso para no usar al mismo jugador dos veces
+
+                if (dp[k].getPeso() != Long.MAX_VALUE) { // Si el estado con k jugadores es válido: (No es infinito)
+
+                    long nuevoSwap = dp[k].getSwap() + (i - k); // Al agregar al jugador i como el (k+1)-ésimo, se usan (i - k) swaps adicionales
+
+                    if (nuevoSwap <= numeroIntercambios) { // Verificamos que no se exceda el límite
+                        long nuevoPeso = dp[k].getPeso() + pesos[i];
+                        if (nuevoPeso < dp[k + 1].getPeso()) {
+                            dp[k + 1] = new Estado((int) nuevoSwap, nuevoPeso); // Actualizamos dp[k+1] si encontramos un estado con menor peso
                         }
                     }
                 }
             }
         }
-
-        long minimo = Long.MAX_VALUE;
-        // Find the minimum weight among all valid states selecting the required number of players.
-        for (int s = 0; s <= numeroIntercambios; s++) {
-            minimo = Math.min(minimo, dp[numeroJugadores][s].getPeso());
+        int minimo = Integer.MAX_VALUE;
+        for (int w = 0; w <= numeroIntercambios; w++) {
+            minimo = (int) Math.min(minimo, dp[numeroJugadores].getPeso());
         }
-
-        return (int)minimo;
+        Long tiempoFinal = System.currentTimeMillis();
+        return minimo;
     }
 
 
