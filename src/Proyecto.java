@@ -46,21 +46,21 @@ public class Proyecto {
     public static void main(String[] args) throws FileNotFoundException {
         Scanner sc = new Scanner(new File("test_cases_2.txt"));
 
-        // Read the number of test cases
+        // Numero de casos de prueba
         int casos = sc.nextInt();
-        // Process each test case
+        // Procesar cada caso de prueba
 
         for (int t = 0; t < casos; t++) {
-            int n = sc.nextInt();      // Number of players (length of the weights array)
-            int j = sc.nextInt();      // Number of players to consider (first j players)
-            int m = sc.nextInt();      // Maximum number of allowed consecutive swaps
+            int n = sc.nextInt();      // Numero de jugadores
+            int j = sc.nextInt();      // Numero de jugadores a seleccionar
+            int m = sc.nextInt();      // Swaaaaaaaaaaaaps
             int[] pesos = new int[n];
 
             for (int i = 0; i < n; i++) {
                 pesos[i] = sc.nextInt();
             }
             int resultado = algormar(pesos, j, m);
-            // The problem expects integer output so cast the result to int.
+            // Imprimir el resultado
             System.out.println((int) resultado);
         }
         System.out.println(Arrays.toString(segundos.toArray()));
