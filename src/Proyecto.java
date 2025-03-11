@@ -2,50 +2,56 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-import static java.util.Collections.min;
-
 public class Proyecto {
 
-    private static ArrayList<Integer> segundos = new ArrayList<>();
-    public static int algormar(int[] pesos, int numeroJugadores, int numeroIntercambios) {
-        Long tiempoInicio = System.currentTimeMillis();
-        int[][] dp = new int[numeroJugadores+1][numeroIntercambios + 1];
-        for (int i = 0; i <= numeroJugadores; i++) {
-            Arrays.fill(dp[i], Integer.MAX_VALUE);
-        }
-        dp[0][0] = 0;
-        for (int i = 0; i < pesos.length; i++) { // recorrer los jugadores en orden
-            // Recorremos el número de jugadores ya seleccionados en orden inverso:
-            for (int k = Math.min(numeroJugadores - 1, i); k >= 0; k--) { // Tomamos el mínimo entre el número de jugadores y el índice actual.
 
-                int costo = i - k;  // El costo de asignar el jugador i en la posición k es (i - k)
-                int maxW = numeroIntercambios - costo; // Solamente podemos hacer intercambios en el rango de 0 a numeroIntercambios - costo
-                if (maxW < 0) {
-                    continue;
-                }
-                for (int w = 0; w <= maxW; w++) { // Iterar por toda la cantidad de intercambios posibles
-                    if (dp[k][w] < Integer.MAX_VALUE) {
-                        int candidato = dp[k][w] + pesos[i];
-                        if (candidato < dp[k+1][w + costo]) {
-                            dp[k+1][w + costo] = candidato;
+
+    // Java
+    public static int algormar(int[] pesos, int numeroJugadores, int numeroIntercambios) {
+        // dp[k][s] holds the best state (swaps and weight) for selecting k players with s swaps.
+        Estado[][] dp = new Estado[numeroJugadores + 1][numeroIntercambios + 1];
+
+        // Initialize states to infinity.
+        for (int k = 0; k <= numeroJugadores; k++) {
+            for (int s = 0; s <= numeroIntercambios; s++) {
+                dp[k][s] = new Estado(Integer.MAX_VALUE, Long.MAX_VALUE);
+            }
+        }
+        dp[0][0] = new Estado(0, 0); // Base state: 0 players, 0 swaps, 0 weight.
+
+        // Iterate over players.
+        for (int i = 0; i < pesos.length; i++) {
+            // Traverse number of players selected in reverse order.
+            for (int k = numeroJugadores - 1; k >= 0; k--) {
+                // Iterate over possible swap counts.
+                for (int s = 0; s <= numeroIntercambios; s++) {
+                    if (dp[k][s].getPeso() != Long.MAX_VALUE) {  // Valid state.
+                        int nuevoSwap = s + (i - k); // Additional swaps needed.
+                        if (nuevoSwap <= numeroIntercambios) {
+                            long nuevoPeso = dp[k][s].getPeso() + pesos[i];
+                            // If new state has a lower weight, update dp.
+                            if (nuevoPeso < dp[k + 1][nuevoSwap].getPeso()) {
+                                dp[k + 1][nuevoSwap] = new Estado(nuevoSwap, nuevoPeso);
+                            }
                         }
                     }
                 }
             }
         }
-        int minimo = Integer.MAX_VALUE;
-        for (int candidato: dp[numeroJugadores]){
-            minimo = Math.min(minimo, candidato);
+
+        long minimo = Long.MAX_VALUE;
+        // Find the minimum weight among all valid states selecting the required number of players.
+        for (int s = 0; s <= numeroIntercambios; s++) {
+            minimo = Math.min(minimo, dp[numeroJugadores][s].getPeso());
         }
-        Long tiempoFinal = System.currentTimeMillis();
-        segundos.add((int) (tiempoFinal - tiempoInicio));
-        return minimo;
+
+        return (int)minimo;
     }
 
 
     public static void main(String[] args) throws FileNotFoundException {
         Scanner sc = new Scanner(new File("test_cases_2.txt"));
-
+        Long tiempoInicio = System.currentTimeMillis();
         // Numero de casos de prueba
         int casos = sc.nextInt();
         // Procesar cada caso de prueba
@@ -63,8 +69,9 @@ public class Proyecto {
             // Imprimir el resultado
             System.out.println((int) resultado);
         }
-        System.out.println(Arrays.toString(segundos.toArray()));
         sc.close();
+        Long tiempoFinal = System.currentTimeMillis();
+        System.out.println("Tiempo total: " + (tiempoFinal - tiempoInicio) + " ms");
 
     }
 }
