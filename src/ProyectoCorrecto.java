@@ -1,11 +1,11 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
-public class ProyectoCorrecto {
+ public class ProyectoCorrecto {
 
     /**
      * Metodo para limpiar la lista de estados
-     * Mira los pesos y los swaps para eliminar aquellos que no son necesarios dado a que ya existen otros mejores
+     * Mira los pesos para eliminar aquellos que no son necesarios dado a que ya existen otros mejores
      * Ya sea con la misma cantidad de swaps y menor peso o con menor cantidad de swaps
      * @param estados
      * @return La lista de estados limpiada
@@ -72,7 +72,7 @@ public class ProyectoCorrecto {
         return minimo;
     }
     public static void main(String[] args) throws FileNotFoundException {
-        Scanner sc = new Scanner(new File("test_cases_2.txt"));
+        Scanner sc = new Scanner(new File("archivo.txt"));
         Long tiempoInicio = System.currentTimeMillis();
         // Numero de casos de prueba
         int casos = sc.nextInt();
@@ -88,7 +88,7 @@ public class ProyectoCorrecto {
                 pesos[i] = sc.nextInt();
             }
             int resultado = algormar(pesos, j, m);
-            System.out.println((int) resultado);
+            System.out.println(Integer.toString(t)+" "+Integer.toString(resultado));
         }
         sc.close();
         Long tiempoFinal = System.currentTimeMillis();
