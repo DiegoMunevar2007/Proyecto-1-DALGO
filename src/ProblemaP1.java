@@ -1,14 +1,11 @@
- import java.io.File;
- import java.io.FileNotFoundException;
- import java.util.*;
- import static java.util.Collections.min;
+import java.io.FileNotFoundException;
+import java.util.*;
  
- public class ProblemaP1 {
+public class ProblemaP1 {
  
  
  
      public static int algormar(int[] pesos, int numeroJugadores, int numeroIntercambios) {
-         Long tiempoInicio = System.currentTimeMillis();
          int[][] dp = new int[numeroJugadores+1][numeroIntercambios + 1];
          for (int i = 0; i <= numeroJugadores; i++) {
              Arrays.fill(dp[i], Integer.MAX_VALUE);
@@ -23,7 +20,6 @@
             for (int i = 0; i < numeroJugadores; i++) {
                 suma += lista.get(i);
             }
-            Long tiempoFinal = System.currentTimeMillis();
             return suma;
          }
          dp[0][0] = 0;
@@ -52,7 +48,6 @@
          for (int candidato: dp[numeroJugadores]){
              minimo = Math.min(minimo, candidato);
          }
-         Long tiempoFinal = System.currentTimeMillis();
          return minimo;
      }
  
