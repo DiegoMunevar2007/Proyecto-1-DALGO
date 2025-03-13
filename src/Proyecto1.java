@@ -3,7 +3,7 @@
  import java.util.*;
  import static java.util.Collections.min;
  
- public class ProyectoAntiguo {
+ public class Proyecto1 {
  
  
  
@@ -27,7 +27,7 @@
             return suma;
          }
          dp[0][0] = 0;
-         for (int i = 0; i < pesos.length; i++) { // recorrer los jugadores en orden
+         for (int i = 0; i < pesos.length; i++) { // Recorrer los jugadores en orden
              // Recorremos el número de jugadores ya seleccionados en orden inverso:
              for (int k = Math.min(numeroJugadores - 1, i); k >= 0; k--) { // Tomamos el mínimo entre el número de jugadores y el índice actual.
                 // Esto significa que no podemos seleccionar más jugadores que los que hemos visto.
@@ -58,12 +58,13 @@
  
  
      public static void main(String[] args) throws FileNotFoundException {
-         Scanner sc = new Scanner(new File("archivo.txt"));
-         Long tiempoInicio = System.currentTimeMillis();
+         Scanner sc = new Scanner(System.in);
          // Numero de casos de prueba
          int casos = sc.nextInt();
          // Procesar cada caso de prueba
- 
+        ArrayList<int[]> lista = new ArrayList<int[]>();
+        ArrayList<Integer> listaJugadores = new ArrayList<Integer>();
+        ArrayList<Integer> listaIntercambios = new ArrayList<Integer>();
          for (int t = 0; t < casos; t++) {
              int n = sc.nextInt();      // Numero de jugadores
              int j = sc.nextInt();      // Numero de jugadores a seleccionar
@@ -73,13 +74,15 @@
              for (int i = 0; i < n; i++) {
                  pesos[i] = sc.nextInt();
              }
-             int resultado = algormar(pesos, j, m);
-             // Imprimir el resultado
-             System.out.println(Integer.toString(t)+" "+Integer.toString(resultado));
+                lista.add(pesos);
+                listaJugadores.add(j);
+                listaIntercambios.add(m);
          }
-         sc.close();
-         Long tiempoFinal = System.currentTimeMillis();
-         System.out.println("Tiempo total: " + (tiempoFinal - tiempoInicio) + " ms");
+        for (int i = 0; i < casos; i++) {
+            System.out.println(algormar(lista.get(i), listaJugadores.get(i), listaIntercambios.get(i)));
+        sc.close();
+         
  
      }
  }
+}
