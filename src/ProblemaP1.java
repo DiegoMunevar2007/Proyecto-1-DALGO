@@ -1,16 +1,14 @@
-import java.io.FileNotFoundException;
 import java.util.*;
- 
 public class ProblemaP1 {
- 
- 
- 
+
      public static int algormar(int[] pesos, int numeroJugadores, int numeroIntercambios) {
          int[][] dp = new int[numeroJugadores+1][numeroIntercambios + 1];
          for (int i = 0; i <= numeroJugadores; i++) {
              Arrays.fill(dp[i], Integer.MAX_VALUE);
          }
-         if (numeroIntercambios >= (numeroJugadores*(pesos.length*numeroJugadores))){
+         // Caso donde los swaps son suficientes para ordenar todos los jugadores
+         // Cota: Cantidad de swaps para bubble sort
+         if (numeroIntercambios >= (pesos.length * pesos.length)) {
             ArrayList<Integer> lista = new ArrayList<Integer>();
             for (int i = 0; i < pesos.length; i++) {
                 lista.add(pesos[i]);
@@ -22,17 +20,19 @@ public class ProblemaP1 {
             }
             return suma;
          }
+         // Caso DP
          dp[0][0] = 0;
          for (int i = 0; i < pesos.length; i++) { // Recorrer los jugadores en orden
              // Recorremos el número de jugadores ya seleccionados en orden inverso:
-             for (int k = Math.min(numeroJugadores - 1, i); k >= 0; k--) { // Tomamos el mínimo entre el número de jugadores y el índice actual.
+             for (int k = Math.min(numeroJugadores - 1, i); k >= 0; k--) { // Tomamos el mínimo entre el número de jugadores y el índice actual para evitar mirar jugadores que no hemos visto.
                 // Esto significa que no podemos seleccionar más jugadores que los que hemos visto.
                 // Si el número de jugadores que hemos visto es menor que el número de jugadores que queremos seleccionar, no podemos seleccionar a nadie.
                 if ((pesos.length - i) >= (numeroJugadores - k) ) {
-                    
+
                     int costo = i - k; // El costo de seleccionar al jugador i como el (k+1)-ésimo.
+                    // Si el jugador es inalcanzable, no lo consideramos
                     if (costo <= numeroIntercambios) {
-                    
+                        // Iteramos sobre los swaps posibles (w) para el jugador i
                         for (int w = 0; w <= numeroIntercambios - costo; w++) {
                             if (dp[k][w] != Integer.MAX_VALUE) {
                                 int nuevoSwap = w + costo;
@@ -44,6 +44,7 @@ public class ProblemaP1 {
                 }
              }
          }
+         
          int minimo = Integer.MAX_VALUE;
          for (int candidato: dp[numeroJugadores]){
              minimo = Math.min(minimo, candidato);
@@ -52,7 +53,7 @@ public class ProblemaP1 {
      }
  
  
-     public static void main(String[] args) throws FileNotFoundException {
+     public static void main(String[] args) {
          Scanner sc = new Scanner(System.in);
          // Numero de casos de prueba
          int casos = sc.nextInt();
